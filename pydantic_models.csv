@@ -1,0 +1,96 @@
+Metadata Model,Attribute Name,Data type,Sample Value
+data_product_basic_metadata,data_product_name,String,FM_FX_Linear_Trade
+data_product_basic_metadata,description,String (Long),"FM Trade Data Product that covers FX Linear trades FX Spot, FX Forward, FX NDF and FX Swap"
+data_product_basic_metadata,data_product_category,String,Source Aligned
+data_product_business_metadata,business_purpose,String,FM Source Aligned DP - Finance
+data_product_classification,sensitivity,Enum,"- Internal
+- External"
+data_product_classification,personal,Boolean,No
+data_product_classification,geo_location access,List (String),"Sample value: 
+- EU
+- Singapore + UK"
+data_product_classification,regulatory_flags,List (String),"Sample value: 
+- BCBS239
+- MAS TRM"
+data_product_classification,certifications,List (String),"Sample value: 
+- Attested/Watermarked by GCFO"
+data_product_classification,approval,Enum,"Sample value: 
+- Approved for Enterprise Use
+- Pending Governance Review"
+data_product_ports,data_product_input_ports,List (scb_table),
+data_product_ports,data_product_output_port,scb_table,
+data_product_ports,data_product_input_process,String (URL/Link),http://www.airflow_url.com/api/input_process
+data_product_ports,data_product_output_process,String (URL/Link),http://www.airflow_url.com/api/output_process
+data_product_ports,lineage,Derived Atlas Relationship,data_product_input_ports to data product using data_product_input_process and from data product to data_product_output_port using data_product_output_process 
+data_product_ports,delivery_channels,Array (String),"Sample value: 
+- REST API
+- PowerBI Semantic Model"
+data_product_ports,access_rules,String (Text),"Sample value: 
+- Accessible to Finance and Risk roles via RBAC
+- Approval required for external sharing"
+data_product_ports,data_landing_pattern,String,API - FDP Staging Table
+data_product_ports,data_handshake,String (URL/Link),http://www.example.com/api/handshake
+data_product_usage,users,Integer,2500
+data_product_usage,systems,Integer,5
+data_product_usage,usecases,Array (String),"- Accounting Capital Liquity
+- LCR"
+data_product_lifecycle,version,String/Decimal,1
+data_product_lifecycle,environment,String,Production
+data_product_lifecycle,lifecycle_status,Enum,"The metadata must have lifecycle status in following values:
+1. Ideate & Propose 
+2. Define & Design 
+3. Develop & Build 
+4. Validate & Approve 
+5. Publish & Consume 
+6. Monitor & Maintain 
+7. Change & Retire"
+data_product_lifecycle,delivery_date,Date,"Sample value: 
+- 2026-02-01"
+data_product_governance_metadata,domain,String,FM
+data_product_governance_metadata,sub_domain,String,FX
+data_product_governance_metadata,refresh_frequency,String,Daily(T+0)
+data_product_governance_metadata,data_product_owner,String,Abc
+data_product_governance_metadata,data_product_owner_contact_information,String (Email),"Sample value: 
+john.tan@company.com"
+data_product_governance_metadata,domain_owner,String,Name/Role
+data_product_governance_metadata,domain_owner_contact_information,String (Email),"Sample value: 
+data.stewards@company.com"
+data_product_governance_metadata,data_steward,String,Abc Xyz
+data_product_governance_metadata,data_steward_contact_information,String (Email),"Sample value: 
+dataplat-support@company.com"
+data_product_governance_metadata,support_contact,String,Abc Xyz
+data_product_governance_metadata,support_contact_information,String (Email),"Sample value: 
+dataplat-support@company.com"
+data_product_governance_metadata,data_retention,String/Integer,3 years
+data_product_governance_metadata,sla,String,
+data_product_governance_metadata,communication_channel,Array (String),"Sample value: 
+- Slack: #data-products-support
+- MS team: #data-products-support"
+scb_database,"
+createTime",Date,03/24/2026 10:04:01 PM (AEDT)
+scb_database,database_name,string,finance_db
+scb_database,description,string,Finance database containing trading and transaction data
+scb_database,locationUri,String (URL/Link),"	
+hdfs://data/finance"
+scb_database,relationship,list(scb_tables),
+scb_database,qualifiedName,string,scb:::dp:::finance_db
+scb_table,"
+createTime",Date,03/24/2026 10:04:01 PM (AEDT)
+scb_table,table_name,string,transactions
+scb_table,description,string,Finance database containing trading and transaction data
+scb_table,table_type,String,"        
+Managed"
+scb_table,relationship,list(scb_columns),
+scb_table,qualifiedName,string,scb:::dp:::finance_db.transactions
+scb_table,temporary,Enum,"- True
+- False"
+scb_column,"
+createTime",Date,03/24/2026 10:04:01 PM (AEDT)
+scb_column,column_name,string,transaction_id
+scb_column,description,string,Unique transaction identifier
+scb_column,data_type,String,"        
+string"
+scb_column,position,Integer,1
+scb_column,qualifiedName,string,scb:::dp:::finance_db.transactions.transaction_id
+scb_column,pii,Enum,"- True
+- False"
