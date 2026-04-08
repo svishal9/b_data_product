@@ -16,7 +16,7 @@ scb_table = BaseEntityCategory(
     display_name="SCB Table",
     super_types= ["DataSet"],
     attributes=[
-            { "name": "table_name", "displayName": "Table Name", "typeName": "string", "cardinality": "SINGLE", "isOptional": False, "isUnique": True, "isIndexable": True },
+            { "name": "table_name", "displayName": "Table Name", "typeName": "string", "cardinality": "SINGLE", "isOptional": False, "isUnique": False, "isIndexable": True },
             { "name": "createTime", "displayName": "Create Time", "typeName": "date", "cardinality": "SINGLE", "isOptional": True, "isUnique": False, "isIndexable": True },
             { "name": "tableType", "displayName": "Table Type", "typeName": "string", "cardinality": "SINGLE", "isOptional": True, "isUnique": False, "isIndexable": True },
             { "name": "temporary", "displayName": "Temporary", "typeName": "boolean", "cardinality": "SINGLE", "isOptional": True, "isUnique": False, "isIndexable": False },

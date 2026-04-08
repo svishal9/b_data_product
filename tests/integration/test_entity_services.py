@@ -117,6 +117,32 @@ class TestEntityServiceFunctions:
 
         assert result == True
 
+    def test_create_same_table_name_in_different_databases(self, mock_atlas_client):
+        """Regression: allow same table_name when database differs."""
+        mock_response = Mock()
+        mock_response.mutatedEntities = {'CREATE': [Mock(guid='guid-456')]}
+        mock_atlas_client.entity.create_entity.return_value = mock_response
+
+        table_finance = TableModel(table_name="positions", database_name="finance_db")
+        table_risk = TableModel(table_name="positions", database_name="risk_db")
+
+        assert create_table_from_model(mock_atlas_client, table_finance) is True
+        assert create_table_from_model(mock_atlas_client, table_risk) is True
+
+        assert mock_atlas_client.entity.create_entity.call_count == 2
+
+        first_payload = mock_atlas_client.entity.create_entity.call_args_list[0].args[0]
+        second_payload = mock_atlas_client.entity.create_entity.call_args_list[1].args[0]
+
+        first_qn = first_payload["entity"]["attributes"]["qualifiedName"]
+        second_qn = second_payload["entity"]["attributes"]["qualifiedName"]
+
+        assert first_payload["entity"]["attributes"]["table_name"] == "positions"
+        assert second_payload["entity"]["attributes"]["table_name"] == "positions"
+        assert first_qn != second_qn
+        assert "finance_db.positions" in first_qn
+        assert "risk_db.positions" in second_qn
+
     def test_create_column_entity_basic(self, mock_atlas_client):
         """Test basic column entity creation."""
         mock_response = Mock()

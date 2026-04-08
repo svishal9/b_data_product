@@ -117,12 +117,12 @@ class TestTableEntityType:
         assert 'table_name' in attr_names
         assert 'temporary' in attr_names
 
-    def test_table_name_is_unique(self):
-        """Test that table_name is marked as unique."""
+    def test_table_name_is_not_globally_unique(self):
+        """Table names can repeat across databases; qualifiedName provides uniqueness."""
         table_entity = [scb_table.prepare_atlas_type_definition()][0]
         attrs = {attr['name']: attr for attr in table_entity['attributeDefs']}
 
-        assert attrs['table_name']['isUnique'] == True
+        assert attrs['table_name']['isUnique'] == False
 
     def test_table_temporary_is_boolean(self):
         """Test that temporary attribute is boolean type."""
