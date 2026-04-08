@@ -31,7 +31,7 @@ scb_table_columns_relation = BaseRelationshipCategory(
         "isLegacyAttribute": False,
     },
     enddef2={
-        "type": "SCB_StandardColumn",
+        "type": "SCB_Column",
         "name": "table",
         "isContainer": False,
         "cardinality": "SINGLE",

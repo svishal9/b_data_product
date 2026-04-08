@@ -170,8 +170,7 @@ Referenceable (Atlas built-in)
     │       ├─► SCB_Database
     │       ├─► SCB_Table
     │       ├─► SCB_Column
-    │       ├─► SCB_DataProduct
-    │       └─► SCB_SourceAlignedDataProduct
+    │       └─► SCB_DataProduct
     │
     └─► Process (Atlas built-in)
             │

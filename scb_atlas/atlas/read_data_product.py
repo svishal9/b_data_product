@@ -6,13 +6,6 @@ from typing import Any
 
 import pandas as pd
 
-from .service.entity_service import (
-    create_column_from_model,
-    create_data_product_from_model,
-    create_database_from_model,
-    create_process_from_model,
-    create_table_from_model,
-)
 from .metadata_models import (
     StandardColumnModel,
     CompleteDataProductModel,
@@ -27,8 +20,14 @@ from .metadata_models import (
     DatabaseModel,
     ProcessModel,
     SensitivityEnum,
-    GranularityEnum,
     TableModel,
+)
+from .service.entity_service import (
+    create_column_from_model,
+    create_data_product_from_model,
+    create_database_from_model,
+    create_process_from_model,
+    create_table_from_model,
 )
 
 _DATA_PRODUCT_SHEET_ALIASES = {"data product", "data_product", "data-product", "source data product"}
@@ -47,10 +46,39 @@ _DATA_PRODUCT_CATEGORY_MAP = {
     "consumer aligned": "Consumer-Aligned",
     "consumer-aligned": "Consumer-Aligned",
 }
+_DOMAIN_MAP = {
+    "fm": "FM",
+    "cib-banking": "CIB-Banking",
+    "cib banking": "CIB-Banking",
+    "wrb-banking": "WRB-Banking",
+    "wrb banking": "WRB-Banking",
+}
+_SUB_DOMAIN_MAP = {
+    "fx": "FX",
+    "rates": "RATES",
+    "options": "Options",
+    "fm common": "FM Common",
+    "loans": "Loans",
+    "money market": "Money Market",
+    "swaps": "Swaps",
+    "bonds": "Bonds",
+    "derivatives": "Derivatives",
+    "commodities": "Commodities",
+    "credit": "Credit",
+    "lending": "Lending",
+    "retail lending": "Retail Lending",
+    "trade finance": "Trade Finance",
+    "cash management": "Cash Management",
+    "wealth management": "Wealth Management",
+    "customer deposits": "Customer Deposits",
+    "retail & corporate cards": "Retail & Corporate Cards",
+    "custody services": "Custody Services",
+    "cib - reference static": "CIB - Reference Static",
+    "investment banking": "Investment Banking",
+}
 _REFRESH_FREQUENCY_MAP = {
     "daily(t+0)": "Daily (T+0)",
     "daily (t+0)": "Daily (T+0)",
-    "Daily(T+0)": "Dailty (T+0)"
 }
 _REFRESH_CUT_MAP = {
     "Actual": "Actual",
@@ -213,7 +241,7 @@ def _create_output_port_assets(
             subledger_ds=_normalize_text(field.subledger_ds) or None,
             fdp_attribute=_normalize_text(field.fdp_attribute_name) or None,
             derivation_logic=_normalize_text(field.derivation_logic) or None,
-            is_cde=field.is_cde.value if field.is_cde else None,
+            is_cde=field.is_cde if field.is_cde else None,
             product_zone=_normalize_text(field.product_zone) or None,
             sample_value_1=_normalize_text(field.sample_value_1) or None,
             sample_value_2=_normalize_text(field.sample_value_2) or None
@@ -322,9 +350,11 @@ def _normalize_mapped_value(value: Any, mapping: dict[str, str], *, field_name: 
     text = _normalize_text(value)
     if not text:
         return None
-    normalized_key = text.lower()
-    if normalized_key in mapping:
-        return mapping[normalized_key]
+    # Collapse repeated/internal whitespace so Excel variants map consistently.
+    normalized_key = " ".join(text.casefold().split())
+    normalized_mapping = {" ".join(k.casefold().split()): v for k, v in mapping.items()}
+    if normalized_key in normalized_mapping:
+        return normalized_mapping[normalized_key]
     if strict:
         raise ValueError(f"Invalid value '{text}' for '{field_name}'.")
     return text
@@ -391,9 +421,9 @@ def _parse_schema_master_sheet(file_path: str | Path, sheet_name: str, *, strict
             raise ValueError(
                 f"Schema sheet '{sheet_name}' must contain a header row with 'Column Name' and 'Data Type'."
             )
-        return []
+        return {}
 
-    schema_fields: dict[str, DataProductMasterSchema] = dict()
+    schema_fields: dict[str, list[DataProductMasterSchema]] = dict()
     for idx in range(header_idx + 1, len(raw_df)):
         row = raw_df.iloc[idx].tolist()
         data_product = _normalize_text(row[1] if len(row) > 1 else "")
@@ -553,8 +583,18 @@ def parse_master_schema_workbook_to_data_products(file_path: str | Path, *, stri
                 delivery_date=None,
             ),
             governance_metadata=DataProductGovernanceMetadata(
-                domain=_normalize_text(row.get("Domain")),
-                sub_domain=_normalize_text(row.get("Sub-Domain")),
+                domain=_normalize_mapped_value(
+                    row.get("Domain"),
+                    _DOMAIN_MAP,
+                    field_name="Domain",
+                    strict=strict,
+                ) or None,
+                sub_domain=_normalize_mapped_value(
+                    row.get("Sub-Domain"),
+                    _SUB_DOMAIN_MAP,
+                    field_name="Sub-Domain",
+                    strict=strict,
+                ) or None,
                 refresh_frequency=_normalize_mapped_value(
                     row.get("Refresh Frequency"),
                     _REFRESH_FREQUENCY_MAP,

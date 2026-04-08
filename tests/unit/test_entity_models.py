@@ -143,7 +143,7 @@ class TestColumnModel:
         )
         entity = col.to_atlas_entity()
         
-        assert entity["typeName"] == "SCB_StandardColumn"
+        assert entity["typeName"] == "SCB_Column"
         assert entity["attributes"]["field_name"] == "trade_id"
         assert entity["attributes"]["data_type"] == "string"
         assert entity["attributes"]["description"] == "Unique trade identifier"

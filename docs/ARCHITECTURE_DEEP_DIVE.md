@@ -70,9 +70,8 @@ scb_atlas/
     │   │   │   │   └── Attributes: column_name, dataType, comment, position
     │   │   │   ├── scb_process: BaseEntityCategory
     │   │   │   │   └── Attributes: process_name, queryId, queryText, etc.
-    │   │   │   ├── scb_data_product: BaseEntityCategory
-    │   │   │   │   └── Attributes: data_product_name, category, tags, etc.
-    │   │   │   └── scb_source_aligned_data_product: BaseEntityCategory
+    │   │   │   └── scb_data_product: BaseEntityCategory
+    │   │   │       └── Attributes: data_product_name, category, tags, etc.
     │   │   │
     │   │   ├── scb_enums.py (ENUM Types)
     │   │   │   ├── SCB_DataProductCategory enum
@@ -248,8 +247,7 @@ scb_atlas/
         │       ├── scb_database
         │       ├── scb_table
         │       ├── scb_column
-        │       ├── scb_data_product
-        │       └── scb_source_aligned_data_product
+        │       └── scb_data_product
         │
         ├── Process
         │   └── Hierarchy:

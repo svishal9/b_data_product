@@ -203,7 +203,6 @@ class BaseEntityCategory:
 - `scb_column`: Column within a table
 - `scb_process`: Data transformation process
 - `scb_data_product`: Data product catalog entry
-- `scb_source_aligned_data_product`: Source-aligned data product variant
 
 **c) ENUM Definitions** (`scb_enums.py`)
 - `SCB_DataProductCategory`: Source-Aligned, Intermediate, Consumer-Aligned

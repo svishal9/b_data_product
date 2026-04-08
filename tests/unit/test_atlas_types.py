@@ -32,7 +32,7 @@ class TestTypeDefinitionStructure:
         assert 'SCB_DataProduct' in type_names
         assert 'SCB_Database' in type_names
         assert 'SCB_Table' in type_names
-        assert 'SCB_StandardColumn' in type_names
+        assert 'SCB_Column' in type_names
         assert 'SCB_Process' in type_names
 
     def test_each_entity_definition_has_required_fields(self):
@@ -144,15 +144,15 @@ class TestTableEntityType:
 
 
 class TestColumnEntityType:
-    """Tests for SCB_StandardColumn entity type definition."""
+    """Tests for SCB_Column entity type definition."""
 
     def test_column_entity_extends_dataset(self):
-        """Test that SCB_StandardColumn extends DataSet."""
+        """Test that SCB_Column extends DataSet."""
         col_entity = [scb_standard_column.prepare_atlas_type_definition()][0]
         assert 'DataSet' in col_entity['superTypes']
 
     def test_column_entity_has_required_attributes(self):
-        """Test that SCB_StandardColumn has all required attributes."""
+        """Test that SCB_Column has all required attributes."""
         col_entity = [scb_standard_column.prepare_atlas_type_definition()][0]
         attr_names = [attr['name'] for attr in col_entity['attributeDefs']]
 

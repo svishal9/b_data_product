@@ -107,3 +107,28 @@ def test_recreate_dry_run_prints_status_without_mutation(monkeypatch, capsys):
 	assert called == {"delete": False, "create": False, "typedef": False}
 
 
+def test_cleanup_dry_run_prints_plan_without_mutation(monkeypatch, capsys):
+	atlas_client = object()
+	call = {}
+
+	def _fake_cleanup(client, dry_run=False):
+		call["client"] = client
+		call["dry_run"] = dry_run
+		print("[DRY-RUN] Entity types to purge:")
+		print("- SCB_Column")
+		print("[DRY-RUN] Type definitions to delete (order):")
+		print("- SCB_Table_Columns")
+
+	monkeypatch.setattr(scb_cli, "create_atlas_client", lambda *_args, **_kwargs: atlas_client)
+	monkeypatch.setattr(scb_cli, "_get_clean_up_atlas", lambda: _fake_cleanup)
+
+	rc = scb_cli.main(["cleanup", "--dry-run"])
+	out = capsys.readouterr().out
+
+	assert rc == 0
+	assert call == {"client": atlas_client, "dry_run": True}
+	assert "[DRY-RUN] Entity types to purge:" in out
+	assert "[DRY-RUN] Type definitions to delete (order):" in out
+	assert "Dry-run complete. No Atlas changes made." in out
+
+

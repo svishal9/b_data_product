@@ -400,8 +400,7 @@ BaseEntityCategory
 ├── scb_table
 ├── scb_column
 ├── scb_process
-├── scb_data_product
-└── scb_source_aligned_data_product
+└── scb_data_product
 
 
 Builder Pattern

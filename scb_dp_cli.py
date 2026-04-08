@@ -153,7 +153,9 @@ def cmd_types(args: argparse.Namespace) -> int:
 def cmd_cleanup(args: argparse.Namespace) -> int:
     client = create_atlas_client()
     reset_scb_types_fn = _get_clean_up_atlas()
-    reset_scb_types_fn(client)
+    reset_scb_types_fn(client, dry_run=args.dry_run)
+    if args.dry_run:
+        print("Dry-run complete. No Atlas changes made.")
     return 0
 
 
@@ -226,6 +228,7 @@ def build_parser() -> argparse.ArgumentParser:
     types_parser.set_defaults(func=cmd_types)
 
     cleanup_parser = subparsers.add_parser("cleanup", help="Purge SCB entities and types")
+    cleanup_parser.add_argument("--dry-run", action="store_true", help="Print purge/delete plan without modifying Atlas")
     cleanup_parser.set_defaults(func=cmd_cleanup)
 
     sample_parser = subparsers.add_parser("sample-entities", help="Create sample entities with Pydantic models")

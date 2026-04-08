@@ -28,13 +28,13 @@ scb_sub_domains_enums = BaseEnumCategory(
         { "value": "Lending", "ordinal": 12},
         { "value": "Trade Finance", "ordinal": 13},
         { "value": "Cash Management", "ordinal": 14},
-        { "value": "Retail Landing", "ordinal": 15},
+        { "value": "Retail Lending", "ordinal": 15},
         { "value": "Wealth Management", "ordinal": 16}, 
-        { "value": "Cusotmer Deposits", "ordinal": 17}, 
+        { "value": "Customer Deposits", "ordinal": 17}, 
         { "value": "Retail & Corporate Cards", "ordinal": 18}, 
         { "value": "Custody Services", "ordinal": 19}, 
         { "value": "CIB - Reference Static", "ordinal": 20}, 
-        { "value": "Wealth Management", "ordinal": 21} 
+        { "value": "Investment Banking", "ordinal": 21} 
     ]
 )
 

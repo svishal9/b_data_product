@@ -107,8 +107,12 @@ class StandardColumnModel(BaseModel):
 
     def to_atlas_entity(self) -> dict:
         """Convert to Atlas entity dictionary."""
+        create_time_ms = int(self.create_time.timestamp() * 1000) if self.create_time else None
+        is_cde_bool = (self.is_cde == CDEEnum.Y) if self.is_cde is not None else None
+        pii_bool = (self.pii == PIIEnum.YES) if self.pii is not None else None
+
         return {
-            "typeName": "SCB_StandardColumn",
+            "typeName": "SCB_Column",
             "attributes": {
                 "name": self.field_name,
                 "field_name": self.field_name,
@@ -123,14 +127,18 @@ class StandardColumnModel(BaseModel):
                 "subledger_ds": self.subledger_ds,
                 "fdp_attribute": self.fdp_attribute,
                 "derivation_logic": self.derivation_logic,
-                "is_cde": self.is_cde.value if self.is_cde else None,
+                "is_cde": is_cde_bool,
                 "product_zone": self.product_zone,
-                "pii": self.pii.value if self.pii else None,
-                "createTime": self.create_time.timestamp() if self.create_time else None,
+                "pii": pii_bool,
+                "createTime": create_time_ms,
                 "sample_value_1": self.sample_value_1,
                 "sample_value_2": self.sample_value_2,
                 "qualifiedName": self.qualified_name,
-                "mdm_link": self.mdm_link
+                "mdm_link": self.mdm_link,
+                # Legacy aliases for compatibility with older Atlas schemas/readers.
+                "column_name": self.field_name,
+                "dataType": self.data_type,
+                "comment": self.description,
             }
         }
 

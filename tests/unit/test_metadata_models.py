@@ -7,8 +7,9 @@ Test suite for Pydantic entity models.
 Tests validation and conversion to Atlas entities.
 """
 
-import pytest
 from datetime import datetime
+
+import pytest
 from pydantic import ValidationError
 
 from scb_atlas.atlas.metadata_models import (
@@ -20,8 +21,7 @@ from scb_atlas.atlas.metadata_models import (
     DataProductBasicMetadata,
     DataProductGovernanceMetadata,
     DataProductPorts,
-    #DataProductSchemaField,
-    DataProductMasterSchema,
+    # DataProductSchemaField,
     TableTypeEnum,
     PIIEnum,
     LifecycleStatusEnum,
@@ -145,7 +145,7 @@ class TestColumnModel:
         )
         entity = col.to_atlas_entity()
         
-        assert entity["typeName"] == "SCB_StandardColumn"
+        assert entity["typeName"] == "SCB_Column"
         assert entity["attributes"]["field_name"] == "trade_id"
         assert entity["attributes"]["data_type"] == "string"
         assert entity["attributes"]["description"] == "Unique trade identifier"

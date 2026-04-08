@@ -466,7 +466,6 @@ get_typedef(client, type_name) -> Dict
 - **SCB_Column**: Column within table
 - **SCB_Process**: Data transformation
 - **SCB_DataProduct**: Data product catalog entry
-- **SCB_SourceAlignedDataProduct**: Source-aligned variant
 
 ### ENUM Types
 - **SCB_DataProductCategory**: Source-Aligned, Intermediate, Consumer-Aligned
