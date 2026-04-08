@@ -178,6 +178,23 @@ class TestColumnEntityType:
             if attr_name in attrs:
                 assert attrs[attr_name]['isOptional'] == True
 
+    def test_column_field_name_not_globally_unique(self):
+        """Test that field_name is NOT globally unique (allows same column name in different tables/data products).
+        
+        This is a regression test for the bug where field_name was marked as unique,
+        causing "violates uniqueness constraint" errors when creating columns with
+        the same name in different data products.
+        
+        Uniqueness should be enforced at the qualifiedName level (inherited from DataSet),
+        not at the field_name level, to allow semantic reuse of column names across tables.
+        """
+        col_entity = [scb_standard_column.prepare_atlas_type_definition()][0]
+        attrs = {attr['name']: attr for attr in col_entity['attributeDefs']}
+
+        # field_name should NOT be unique globally
+        assert attrs['field_name']['isUnique'] == False, \
+            "field_name must not be globally unique to allow same column name in different tables"
+
 
 class TestProcessEntityType:
     """Tests for SCB_Process entity type definition."""

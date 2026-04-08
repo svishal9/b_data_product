@@ -1,4 +1,3 @@
-
 from typing import Any
 import logging
 
@@ -32,16 +31,19 @@ def delete_typedef(atlas_client:AtlasClient, type_name: str) -> None:
 
 
 def create_typedef(type_defs: dict, atlas_client: AtlasClient) -> Any:
-
     """
     Create or update type definitions in Apache Atlas using the provided client.
 
+    Existing types are updated via PUT (not skipped) so that attribute-level
+    changes — such as removing a uniqueness constraint — are applied to a live
+    cluster without having to delete and recreate entities.
+
     Args:
-        type_defs (dict): The type definitions to create.
+        type_defs (dict): The type definitions to create or update.
         atlas_client (AtlasClient): The client used to interact with Apache Atlas.
 
     Returns:
-        dict: A dictionary containing the result of the type creation/update operation.
+        dict: A dictionary containing the result of the operation.
 
     Raises:
         TypeCreationError: If there is an error creating or updating type definitions.
@@ -49,7 +51,6 @@ def create_typedef(type_defs: dict, atlas_client: AtlasClient) -> Any:
     type_def = type_coerce(type_defs, AtlasTypesDef)
 
     type_to_create = AtlasTypesDef()
-
     type_to_create.enumDefs             = []
     type_to_create.structDefs           = []
     type_to_create.classificationDefs   = []
@@ -57,51 +58,56 @@ def create_typedef(type_defs: dict, atlas_client: AtlasClient) -> Any:
     type_to_create.relationshipDefs     = []
     type_to_create.businessMetadataDefs = []
 
-    if type_def.enumDefs:
-        for enum_def in type_def.enumDefs:
-            if atlas_client.typedef.type_with_name_exists(enum_def.name):
-                print("Type with name %s already exists. Skipping.", enum_def.name)
-            else:
-                type_to_create.enumDefs.append(enum_def)
+    type_to_update = AtlasTypesDef()
+    type_to_update.enumDefs             = []
+    type_to_update.structDefs           = []
+    type_to_update.classificationDefs   = []
+    type_to_update.entityDefs           = []
+    type_to_update.relationshipDefs     = []
+    type_to_update.businessMetadataDefs = []
 
-    if type_def.structDefs:
-        for struct_def in type_def.structDefs:
-            if atlas_client.typedef.type_with_name_exists(struct_def.name):
-                print("Type with name %s already exists. Skipping.", struct_def.name)
-            else:
-                type_to_create.structDefs.append(struct_def)
+    _collections = [
+        (type_def.enumDefs,             type_to_create.enumDefs,             type_to_update.enumDefs),
+        (type_def.structDefs,           type_to_create.structDefs,           type_to_update.structDefs),
+        (type_def.classificationDefs,   type_to_create.classificationDefs,   type_to_update.classificationDefs),
+        (type_def.entityDefs,           type_to_create.entityDefs,           type_to_update.entityDefs),
+        (type_def.relationshipDefs,     type_to_create.relationshipDefs,     type_to_update.relationshipDefs),
+        (type_def.businessMetadataDefs, type_to_create.businessMetadataDefs, type_to_update.businessMetadataDefs),
+    ]
 
-    if type_def.classificationDefs:
-        for classification_def in type_def.classificationDefs:
-            if atlas_client.typedef.type_with_name_exists(classification_def.name):
-                print("Type with name %s already exists. Skipping.", classification_def.name)
+    for source_defs, create_list, update_list in _collections:
+        if not source_defs:
+            continue
+        for defn in source_defs:
+            if atlas_client.typedef.type_with_name_exists(defn.name):
+                logger.info("Type '%s' already exists — will update.", defn.name)
+                update_list.append(defn)
             else:
-                type_to_create.classificationDefs.append(classification_def)
+                logger.info("Type '%s' does not exist — will create.", defn.name)
+                create_list.append(defn)
 
-    if type_def.entityDefs:
-        for entity_def in type_def.entityDefs:
-            if atlas_client.typedef.type_with_name_exists(entity_def.name):
-                logger.info("Type with name %s already exists. Skipping.", entity_def.name)
-            else:
-                type_to_create.entityDefs.append(entity_def)
+    def _has_any(td: AtlasTypesDef) -> bool:
+        return any([
+            td.enumDefs, td.structDefs, td.classificationDefs,
+            td.entityDefs, td.relationshipDefs, td.businessMetadataDefs,
+        ])
 
-    if type_def.relationshipDefs:
-        for relationship_def in type_def.relationshipDefs:
-            if atlas_client.typedef.type_with_name_exists(relationship_def.name):
-                logger.info("Type with name %s already exists. Skipping.", relationship_def.name)
-            else:
-                type_to_create.relationshipDefs.append(relationship_def)
-
-    if type_def.businessMetadataDefs:
-        for business_metadata_def in type_def.businessMetadataDefs:
-            if atlas_client.typedef.type_with_name_exists(business_metadata_def.name):
-                logger.info("Type with name %s already exists. Skipping.", business_metadata_def.name)
-            else:
-                type_to_create.businessMetadataDefs.append(business_metadata_def)
+    result = None
 
     try:
-        result = atlas_client.typedef.create_atlas_typedefs(type_to_create)
-        return result
+        if _has_any(type_to_create):
+            result = atlas_client.typedef.create_atlas_typedefs(type_to_create)
+            logger.info("Type definitions created successfully.")
     except Exception as e:
         logger.error(f"Error creating type definitions: {e}")
         raise TypeCreationError(f"Failed to create type definitions: {e}") from e
+
+    try:
+        if _has_any(type_to_update):
+            result = atlas_client.typedef.update_atlas_typedefs(type_to_update)
+            logger.info("Type definitions updated successfully.")
+    except Exception as e:
+        logger.error(f"Error updating type definitions: {e}")
+        raise TypeCreationError(f"Failed to update type definitions: {e}") from e
+
+    return result
