@@ -1,0 +1,80 @@
+# Docker build context exclusions
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+*.egg-info/
+dist/
+build/
+
+# Git files
+.git/
+.gitignore
+.gitattributes
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+
+# Docker files
+Dockerfile
+.dockerignore
+
+# Documentation
+*.md
+docs/
+
+# Test files
+test_*.py
+tests/
+*.test.py
+
+# Sample data
+sample_data/
+*.xlsx
+*.csv
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Apache Atlas files
+apache-atlas/
+dcompose/
+
+# Lock files (already in venv)
+poetry.lock
+
+# Package files
+requirements.txt
+
+# Keep these files for Docker build:
+# - pyproject.toml (NEEDED - project dependencies)
+# - uv.lock (NEEDED - locked dependencies)
+# - Kubernetes files (may be needed for future reference)
+

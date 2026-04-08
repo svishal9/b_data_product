@@ -1,0 +1,30 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyma-project/kyma/main/components/api-gateway/config/crd/bases/gateway.kyma-project.io_apirules.yaml
+# yamllint disable-line rule:document-start rule:line-length
+# noinspection KubernetesUnknownResources
+# noinspection KubernetesUnknownApiVersion
+apiVersion: gateway.kyma-project.io/v2
+kind: APIRule
+metadata:
+  name: atlas-apirule
+  namespace: atlas-system
+spec:
+  # Replace with your cluster gateway if different.
+  gateway: kyma-system/kyma-gateway
+  hosts:
+    # Must be a full host matching the selected gateway wildcard, e.g. atlas.apps.cluster.example.com
+    - atlas.example.com
+  service:
+    name: atlas
+    namespace: atlas-system
+    port: 23000
+  rules:
+    - path: /.*
+      methods:
+        - GET
+        - POST
+        - PUT
+        - PATCH
+        - DELETE
+        - HEAD
+        - OPTIONS
+      noAuth: true

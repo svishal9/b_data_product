@@ -1,0 +1,21 @@
+version: '3.8'
+services:
+  atlas:
+    image: atlas:latest
+    container_name: atlas_server
+    platform: linux/amd64 
+    ports:
+      - "23000:21000"
+    # Mapping the data folder so it doesn't have to re-initialize every time
+    volumes:
+      - ./data:/apache-atlas/data
+      - ./logs:/apache-atlas/logs
+    environment:
+      # Use the image's preferred variable for memory
+      - ATLAS_SERVER_OPTS=-Xms2g -Xmx8g -XX:SoftRefLRUPolicyMSPerMB=0
+    # Add a healthcheck so you know exactly when the UI is ready
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:21000/login.jsp || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 20

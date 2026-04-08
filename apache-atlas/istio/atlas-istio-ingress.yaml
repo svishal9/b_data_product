@@ -1,0 +1,49 @@
+# Legacy combined manifest.
+# Preferred for portability: use kustomize overlays under istio/overlays.
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: atlas-gateway
+  namespace: atlas-system
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - port:
+        number: 23000
+        name: http-atlas
+        protocol: HTTP
+      hosts:
+        - "*"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: istio-ingressgateway-atlas
+  namespace: istio-system
+spec:
+  type: LoadBalancer
+  selector:
+    istio: ingressgateway
+  ports:
+    - name: http-atlas
+      port: 23000
+      protocol: TCP
+      targetPort: 8080
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: atlas-virtualservice
+  namespace: atlas-system
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - atlas-gateway
+  http:
+    - route:
+        - destination:
+            host: atlas.atlas-system.svc.cluster.local
+            port:
+              number: 23000

@@ -1,0 +1,96 @@
+---
+# Configuration template for SCB Ingestion deployment
+# Copy and modify this file to customize your deployment
+
+# Atlas Server Configuration
+atlas:
+  server:
+    host: "atlas"                    # Kubernetes service DNS or hostname
+    port: 21000                      # Default Atlas REST API port
+    protocol: "http"                 # http or https
+    timeout: 30                      # Connection timeout in seconds
+  
+  credentials:
+    username: ""                     # Leave empty when using Kubernetes Secret
+    password: ""                     # Leave empty when using Kubernetes Secret
+    use_secret: true                 # Secret-first default
+
+# Ingestion Job Configuration
+ingestion:
+  schedule: "0 2 * * *"              # CronJob schedule (2 AM daily)
+  timeout: 3600                      # Job timeout in seconds (1 hour)
+  retry_count: 3                     # Number of retries on failure
+  
+  # Resource allocation
+  resources:
+    requests:
+      memory: "512Mi"                # Minimum memory required
+      cpu: "250m"                    # Minimum CPU required
+    limits:
+      memory: "2Gi"                  # Maximum memory allowed
+      cpu: "1000m"                   # Maximum CPU allowed
+
+# Workbook Configuration
+workbooks:
+  mount_path: "/data/workbooks"      # Container path where workbooks are mounted
+  storage_size: "5Gi"                # PVC size for workbook storage
+  storage_class: "standard"          # Kubernetes StorageClass
+
+# Kubernetes Configuration
+kubernetes:
+  namespace: "scb-ingestion"         # Namespace for ingestion resources
+  image:
+    name: "scb-ingestion"            # Docker image name
+    tag: "latest"                    # Docker image tag
+    pull_policy: "IfNotPresent"      # ImagePullPolicy
+    registry: ""                     # Optional: Docker registry prefix
+  
+  # RBAC Configuration
+  rbac:
+    enabled: true                    # Enable RBAC
+    service_account: "scb-ingestion-sa"
+  
+  # Pod security
+  security_context:
+    run_as_non_root: true
+    fs_read_only_root_filesystem: false
+
+# Logging Configuration
+logging:
+  level: "INFO"                      # Log level: DEBUG, INFO, WARNING, ERROR
+  format: "json"                     # Log format: text or json
+  retention_days: 7                  # Log retention period
+
+# Monitoring Configuration
+monitoring:
+  enabled: false                     # Enable Prometheus metrics
+  port: 9090                         # Metrics port
+  interval: 30                       # Scrape interval in seconds
+
+# Notifications (optional)
+notifications:
+  enabled: false                     # Enable job completion notifications
+  slack_webhook: ""                  # Slack webhook URL
+  email:
+    enabled: false
+    recipients: []                   # List of email recipients
+
+# Environment Variables (additional)
+# These will be added to the job pods
+environment:
+  PYTHONUNBUFFERED: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
+  LOG_LEVEL: "INFO"
+
+# Feature Flags
+features:
+  dry_run: false                     # Run in dry-run mode
+  strict_validation: false           # Enable strict workbook validation
+  parallel_processing: false         # Enable parallel workbook processing
+
+# Debugging
+debug:
+  enabled: false                     # Enable debug mode
+  keep_pods_on_failure: true         # Keep pods running on failure for debugging
+  verbose_logging: false             # Enable verbose logging
+
