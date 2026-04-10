@@ -1,0 +1,36 @@
+apiVersion: gateway.kyma-project.io/v1beta1
+kind: APIRule
+metadata:
+  name: scb-frontend
+  namespace: scb-frontend
+spec:
+  gateway: kyma-system/kyma-gateway
+  host: scb-frontend.kyma.ondemand.com
+  service:
+    name: scb-frontend
+    port: 80
+  rules:
+  - path: /.*
+    methods:
+    - GET
+    - HEAD
+    - OPTIONS
+    - POST
+    - PUT
+    - DELETE
+    - PATCH
+    accessStrategies:
+    - handler: noop
+      config: {}
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: scb-frontend-config
+  namespace: scb-frontend
+data:
+  API_BASE_URL: "/api"
+  NODE_ENV: "production"
+

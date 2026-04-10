@@ -1,0 +1,78 @@
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: scb-frontend-gateway
+  namespace: scb-frontend
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+  - port:
+      number: 443
+      name: https
+      protocol: HTTPS
+    tls:
+      mode: SIMPLE
+      credentialName: scb-frontend-cert
+    hosts:
+    - "*"
+
+---
+
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: scb-frontend-vs
+  namespace: scb-frontend
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - scb-frontend-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: scb-frontend
+        port:
+          number: 80
+      weight: 100
+    timeout: 30s
+    retries:
+      attempts: 3
+      perTryTimeout: 10s
+
+---
+
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: scb-frontend-authpolicy
+  namespace: scb-frontend
+spec:
+  selector:
+    matchLabels:
+      app: scb-frontend
+  action: ALLOW
+  rules:
+  - from:
+    - source:
+        principals: ["cluster.local/ns/istio-system/sa/istio-ingressgateway"]
+    to:
+    - operation:
+        methods: ["GET", "HEAD", "OPTIONS"]
+  - from:
+    - source:
+        principals: ["cluster.local/ns/scb-frontend/sa/scb-frontend"]
+    to:
+    - operation:
+        methods: ["*"]
+
