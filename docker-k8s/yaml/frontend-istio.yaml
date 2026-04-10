@@ -36,6 +36,21 @@ spec:
   gateways:
   - scb-frontend-gateway
   http:
+  # Route /api/ requests to catalog-api backend
+  - match:
+    - uri:
+        prefix: /api/
+    route:
+    - destination:
+        host: catalog-api
+        port:
+          number: 8000
+      weight: 100
+    timeout: 30s
+    retries:
+      attempts: 3
+      perTryTimeout: 10s
+  # Route all other requests to frontend
   - match:
     - uri:
         prefix: /
@@ -49,6 +64,43 @@ spec:
     retries:
       attempts: 3
       perTryTimeout: 10s
+
+---
+
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: scb-frontend-mtls
+  namespace: scb-frontend
+spec:
+  mtls:
+    mode: PERMISSIVE
+
+---
+
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: scb-frontend-dr
+  namespace: scb-frontend
+spec:
+  host: scb-frontend
+  trafficPolicy:
+    tls:
+      mode: ISTIO_MUTUAL
+
+---
+
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: catalog-api-dr
+  namespace: scb-frontend
+spec:
+  host: catalog-api
+  trafficPolicy:
+    tls:
+      mode: ISTIO_MUTUAL
 
 ---
 
@@ -75,4 +127,32 @@ spec:
     to:
     - operation:
         methods: ["*"]
+
+---
+
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: catalog-api-authpolicy
+  namespace: scb-frontend
+spec:
+  selector:
+    matchLabels:
+      app: catalog-api
+  action: ALLOW
+  rules:
+  # Allow frontend sidecar to reach catalog-api
+  - from:
+    - source:
+        principals: ["cluster.local/ns/scb-frontend/sa/scb-frontend"]
+    to:
+    - operation:
+        methods: ["*"]
+  # Allow Istio ingress gateway to reach catalog-api for /api/ routes
+  - from:
+    - source:
+        principals: ["cluster.local/ns/istio-system/sa/istio-ingressgateway"]
+    to:
+    - operation:
+        methods: ["GET", "HEAD", "OPTIONS", "POST", "PUT", "DELETE"]
 

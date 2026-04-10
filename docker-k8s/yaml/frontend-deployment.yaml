@@ -33,11 +33,14 @@ spec:
         version: v1
       annotations:
         sidecar.istio.io/inject: "true"
+        sidecar.istio.io/rewriteAppHTTPProbers: "true"
+        proxy.istio.io/config: |
+          holdApplicationUntilProxyStarts: true
     spec:
       serviceAccountName: scb-frontend
       containers:
       - name: frontend
-        image: docker.io/svishal9/docker.io/svishal9/frontend:latest
+        image: svishal9/frontend:latest
         imagePullPolicy: IfNotPresent
         ports:
         - name: http
@@ -140,7 +143,27 @@ spec:
     ports:
     - protocol: TCP
       port: 80
+  # Allow Istio sidecar inbound ports
+  - ports:
+    - protocol: TCP
+      port: 15001
+    - protocol: TCP
+      port: 15006
+    - protocol: TCP
+      port: 15021
+    - protocol: TCP
+      port: 15090
   egress:
+  # Allow Istio sidecar outbound ports
+  - ports:
+    - protocol: TCP
+      port: 15001
+    - protocol: TCP
+      port: 15006
+    - protocol: TCP
+      port: 15012
+    - protocol: TCP
+      port: 15021
   - to:
     - namespaceSelector: {}
     ports:

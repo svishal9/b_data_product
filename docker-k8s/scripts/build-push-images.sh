@@ -56,7 +56,9 @@ echo "✓ Backend image pushed: $BACKEND_IMAGE"
 echo ""
 
 # Update deployment images in a way that works on both macOS and Linux.
+# Replaces any existing image reference (fresh or previously updated) with the new one.
 python - "$FRONTEND_IMAGE" "$BACKEND_IMAGE" <<'PY'
+import re
 from pathlib import Path
 import sys
 
@@ -65,12 +67,16 @@ frontend_image, backend_image = sys.argv[1], sys.argv[2]
 frontend_manifest = Path("docker-k8s/yaml/frontend-deployment.yaml")
 backend_manifest = Path("docker-k8s/yaml/catalog-api-deployment.yaml")
 
-frontend_manifest.write_text(
-    frontend_manifest.read_text().replace("scb-frontend:latest", frontend_image)
-)
-backend_manifest.write_text(
-    backend_manifest.read_text().replace("scb-catalog-api:latest", backend_image)
-)
+# Match "image: <anything>" lines and replace the image value.
+def replace_image(text, new_image):
+    return re.sub(
+        r'(image:\s*)\S+',
+        rf'\g<1>{new_image}',
+        text,
+    )
+
+frontend_manifest.write_text(replace_image(frontend_manifest.read_text(), frontend_image))
+backend_manifest.write_text(replace_image(backend_manifest.read_text(), backend_image))
 PY
 
 

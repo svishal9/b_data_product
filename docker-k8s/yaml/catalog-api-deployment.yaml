@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
       - name: catalog-api
-        image: docker.io/svishal9/docker.io/svishal9/catalog-api:latest
+        image: svishal9/catalog-api:latest
         imagePullPolicy: IfNotPresent
         ports:
         - name: http
