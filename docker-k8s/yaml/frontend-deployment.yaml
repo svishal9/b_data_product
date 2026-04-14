@@ -62,25 +62,18 @@ spec:
           httpGet:
             path: /health
             port: 80
-          initialDelaySeconds: 10
+          initialDelaySeconds: 30
           periodSeconds: 30
-          timeoutSeconds: 3
-          failureThreshold: 3
+          timeoutSeconds: 5
+          failureThreshold: 5
         readinessProbe:
           httpGet:
             path: /ready
             port: 80
-          initialDelaySeconds: 5
+          initialDelaySeconds: 20
           periodSeconds: 10
-          timeoutSeconds: 2
-          failureThreshold: 2
-        securityContext:
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: false
-          runAsNonRoot: false
-          capabilities:
-            drop:
-            - ALL
+          timeoutSeconds: 5
+          failureThreshold: 5
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -120,59 +113,4 @@ spec:
     name: http
   selector:
     app: scb-frontend
-
----
-
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: scb-frontend
-  namespace: scb-frontend
-spec:
-  podSelector:
-    matchLabels:
-      app: scb-frontend
-  policyTypes:
-  - Ingress
-  - Egress
-  ingress:
-  - from:
-    - namespaceSelector:
-        matchLabels:
-          istio-injection: enabled
-    ports:
-    - protocol: TCP
-      port: 80
-  # Allow Istio sidecar inbound ports
-  - ports:
-    - protocol: TCP
-      port: 15001
-    - protocol: TCP
-      port: 15006
-    - protocol: TCP
-      port: 15021
-    - protocol: TCP
-      port: 15090
-  egress:
-  # Allow Istio sidecar outbound ports
-  - ports:
-    - protocol: TCP
-      port: 15001
-    - protocol: TCP
-      port: 15006
-    - protocol: TCP
-      port: 15012
-    - protocol: TCP
-      port: 15021
-  - to:
-    - namespaceSelector: {}
-    ports:
-    - protocol: TCP
-      port: 443
-    - protocol: TCP
-      port: 80
-    - protocol: TCP
-      port: 8000
-    - protocol: UDP
-      port: 53
 
