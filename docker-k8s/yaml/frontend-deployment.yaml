@@ -32,10 +32,7 @@ spec:
         app: scb-frontend
         version: v1
       annotations:
-        sidecar.istio.io/inject: "true"
-        sidecar.istio.io/rewriteAppHTTPProbers: "true"
-        proxy.istio.io/config: |
-          holdApplicationUntilProxyStarts: true
+        sidecar.istio.io/inject: "false"
     spec:
       serviceAccountName: scb-frontend
       containers:
@@ -62,7 +59,7 @@ spec:
           httpGet:
             path: /health
             port: 80
-          initialDelaySeconds: 30
+          initialDelaySeconds: 10
           periodSeconds: 30
           timeoutSeconds: 5
           failureThreshold: 5
@@ -70,7 +67,7 @@ spec:
           httpGet:
             path: /ready
             port: 80
-          initialDelaySeconds: 20
+          initialDelaySeconds: 5
           periodSeconds: 10
           timeoutSeconds: 5
           failureThreshold: 5

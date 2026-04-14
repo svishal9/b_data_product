@@ -17,10 +17,7 @@ spec:
         app: catalog-api
         version: v1
       annotations:
-        sidecar.istio.io/inject: "true"
-        sidecar.istio.io/rewriteAppHTTPProbers: "true"
-        proxy.istio.io/config: |
-          holdApplicationUntilProxyStarts: true
+        sidecar.istio.io/inject: "false"
     spec:
       containers:
       - name: catalog-api
@@ -48,7 +45,7 @@ spec:
           httpGet:
             path: /api/catalog/health
             port: http
-          initialDelaySeconds: 30
+          initialDelaySeconds: 15
           periodSeconds: 30
           timeoutSeconds: 5
           failureThreshold: 5
@@ -56,7 +53,7 @@ spec:
           httpGet:
             path: /api/catalog/health
             port: http
-          initialDelaySeconds: 20
+          initialDelaySeconds: 10
           periodSeconds: 10
           timeoutSeconds: 5
           failureThreshold: 5
@@ -77,4 +74,3 @@ spec:
     port: 8000
     targetPort: http
     protocol: TCP
-

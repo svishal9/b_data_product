@@ -6,34 +6,34 @@ metadata:
 spec:
   gateway: kyma-system/kyma-gateway
   hosts:
-    - scb-frontend.c-77b2870.kyma.ondemand.com
+  - scb-frontend.c-77b2870.kyma.ondemand.com
   service:
     name: scb-frontend
     port: 80
   rules:
-    - path: /api
-      methods:
-        - GET
-        - HEAD
-        - OPTIONS
-        - POST
-        - PUT
-        - DELETE
-        - PATCH
-      noAuth: true
-      service:
-        name: catalog-api
-        port: 8000
-    - path: /
-      methods:
-        - GET
-        - HEAD
-        - OPTIONS
-        - POST
-        - PUT
-        - DELETE
-        - PATCH
-      noAuth: true
+  - path: /api
+    methods:
+    - GET
+    - HEAD
+    - OPTIONS
+    - POST
+    - PUT
+    - DELETE
+    - PATCH
+    noAuth: true
+    service:
+      name: catalog-api
+      port: 8000
+  - path: /
+    methods:
+    - GET
+    - HEAD
+    - OPTIONS
+    - POST
+    - PUT
+    - DELETE
+    - PATCH
+    noAuth: true
 
 ---
 
