@@ -18,18 +18,21 @@ spec:
         version: v1
       annotations:
         sidecar.istio.io/inject: "true"
+        sidecar.istio.io/rewriteAppHTTPProbers: "true"
+        proxy.istio.io/config: |
+          holdApplicationUntilProxyStarts: true
     spec:
       containers:
       - name: catalog-api
         image: svishal9/catalog-api:latest
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         ports:
         - name: http
           containerPort: 8000
           protocol: TCP
         env:
         - name: ATLAS_URL
-          value: "http://atlas.atlas-system.svc.cluster.local:23000"
+          value: "https://atlas.c-77b2870.kyma.ondemand.com"
         - name: ATLAS_USERNAME
           value: "admin"
         - name: ATLAS_PASSWORD
@@ -45,18 +48,18 @@ spec:
           httpGet:
             path: /api/catalog/health
             port: http
-          initialDelaySeconds: 15
+          initialDelaySeconds: 30
           periodSeconds: 30
           timeoutSeconds: 5
-          failureThreshold: 3
+          failureThreshold: 5
         readinessProbe:
           httpGet:
             path: /api/catalog/health
             port: http
-          initialDelaySeconds: 10
+          initialDelaySeconds: 20
           periodSeconds: 10
-          timeoutSeconds: 3
-          failureThreshold: 3
+          timeoutSeconds: 5
+          failureThreshold: 5
 ---
 apiVersion: v1
 kind: Service
@@ -95,7 +98,27 @@ spec:
     ports:
     - protocol: TCP
       port: 8000
+  # Allow Istio sidecar inbound ports
+  - ports:
+    - protocol: TCP
+      port: 15001
+    - protocol: TCP
+      port: 15006
+    - protocol: TCP
+      port: 15021
+    - protocol: TCP
+      port: 15090
   egress:
+  # Allow Istio sidecar outbound ports
+  - ports:
+    - protocol: TCP
+      port: 15001
+    - protocol: TCP
+      port: 15006
+    - protocol: TCP
+      port: 15012
+    - protocol: TCP
+      port: 15021
   - to:
     - namespaceSelector:
         matchLabels:
