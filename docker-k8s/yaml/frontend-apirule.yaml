@@ -6,7 +6,7 @@ metadata:
 spec:
   gateway: kyma-system/kyma-gateway
   hosts:
-  - scb-frontend.c-77b2870.kyma.ondemand.com
+  - atlas-scb-fe.c-77b2870.kyma.ondemand.com
   service:
     name: scb-frontend
     port: 80
