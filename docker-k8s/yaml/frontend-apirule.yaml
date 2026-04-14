@@ -1,4 +1,4 @@
-apiVersion: gateway.kyma-project.io/v1beta1
+apiVersion: gateway.kyma-project.io/v2
 kind: APIRule
 metadata:
   name: scb-frontend
@@ -10,7 +10,7 @@ spec:
     name: scb-frontend
     port: 80
   rules:
-    - path: /api/.*
+    - path: /.*
       methods:
         - GET
         - HEAD
@@ -19,17 +19,6 @@ spec:
         - PUT
         - DELETE
         - PATCH
-      accessStrategies:
-        - handler: noop
-          config: {}
-      service:
-        name: catalog-api
-        port: 8000
-    - path: /.*
-      methods:
-        - GET
-        - HEAD
-        - OPTIONS
       accessStrategies:
         - handler: noop
           config: {}
@@ -44,4 +33,3 @@ metadata:
 data:
   API_BASE_URL: "/api"
   NODE_ENV: "production"
-
