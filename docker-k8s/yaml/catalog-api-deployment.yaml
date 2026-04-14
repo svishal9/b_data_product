@@ -17,11 +17,11 @@ spec:
         app: catalog-api
         version: v1
       annotations:
-        sidecar.istio.io/inject: "false"
+        sidecar.istio.io/inject: "true"
     spec:
       containers:
       - name: catalog-api
-        image: svishal9/catalog-api:latest
+        image: docker.io/svishal9/catalog-api:latest
         imagePullPolicy: Always
         ports:
         - name: http

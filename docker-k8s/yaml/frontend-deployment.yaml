@@ -2,17 +2,19 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: scb-frontend
+  labels:
+    istio-injection: enabled
 
 ---
 
 apiVersion: security.istio.io/v1beta1
 kind: PeerAuthentication
 metadata:
-  name: scb-frontend-disable-mtls
+  name: scb-frontend-mtls
   namespace: scb-frontend
 spec:
   mtls:
-    mode: DISABLE
+    mode: PERMISSIVE
 
 ---
 
@@ -40,12 +42,12 @@ spec:
         app: scb-frontend
         version: v1
       annotations:
-        sidecar.istio.io/inject: "false"
+        sidecar.istio.io/inject: "true"
     spec:
       serviceAccountName: scb-frontend
       containers:
       - name: frontend
-        image: svishal9/frontend:latest
+        image: docker.io/svishal9/frontend:latest
         imagePullPolicy: Always
         ports:
         - name: http
