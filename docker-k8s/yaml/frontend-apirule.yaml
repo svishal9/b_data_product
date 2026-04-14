@@ -11,7 +11,7 @@ spec:
     name: scb-frontend
     port: 80
   rules:
-    - path: /api/*
+    - path: /api
       methods:
         - GET
         - HEAD
@@ -24,11 +24,15 @@ spec:
       service:
         name: catalog-api
         port: 8000
-    - path: /*
+    - path: /
       methods:
         - GET
         - HEAD
         - OPTIONS
+        - POST
+        - PUT
+        - DELETE
+        - PATCH
       noAuth: true
 
 ---
