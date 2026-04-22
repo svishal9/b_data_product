@@ -7,16 +7,6 @@ metadata:
 
 ---
 
-apiVersion: security.istio.io/v1beta1
-kind: PeerAuthentication
-metadata:
-  name: scb-frontend-mtls
-  namespace: scb-frontend
-spec:
-  mtls:
-    mode: PERMISSIVE
-
----
 
 apiVersion: apps/v1
 kind: Deployment
