@@ -139,7 +139,6 @@ All project documentation is organized in the `docs/` folder. Start with [`ARCHI
 - **[DOCUMENTATION_CHECKLIST.md](./docs/DOCUMENTATION_CHECKLIST.md)** - Documentation checklist
 
 ### Reference
-- **[CLAUDE.md](./docs/CLAUDE.md)** - AI assistant context and guidelines
 
 ---
 
